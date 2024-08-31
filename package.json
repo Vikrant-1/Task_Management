@@ -1,0 +1,17 @@
+{
+  "name": "task_management",
+  "version": "1.0.0",
+  "description": "Design and develop a database and backend application for a task management system. This application allows the creation of multiple projects, adding users to each project, and assigning tasks to them.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.6.0",
+    "zod": "^3.23.8"
+  }
+}
