@@ -54,9 +54,13 @@ const updatePasswordService = async ({ userId, password, newPassword }) => {
   const isPassword = await user.comparePassword(password);
   if (!isPassword) throw new Error("Password is Wrong");
 
-  const updatedUser = await User.updateOne({ username }, { password });
+  const updatedUser = await User.updateOne({ _id: userId }, { password });
 
   return updatedUser;
+};
+
+const deleteUserService = async ({ userId }) => {
+  await User.findByIdAndDelete(userId);
 };
 
 export {
@@ -65,4 +69,5 @@ export {
   getUserService,
   updateUserService,
   updatePasswordService,
+  deleteUserService,
 };

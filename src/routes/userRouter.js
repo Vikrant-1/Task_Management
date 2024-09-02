@@ -1,14 +1,13 @@
 import express from "express";
-import { getUser, loginUser, registerUser, updatePassword, updateUser } from "../controller/user.controller.js";
+import { deleteUser, getUser, loginUser, registerUser, updatePassword, updateUser } from "../controller/user.controller.js";
 
 const userRouter = express.Router();
 
 userRouter.post("/signup", registerUser);
-//  delete  , change password with email base
-
 userRouter.post("/login", loginUser);
 userRouter.get("/", getUser);
 userRouter.put("/", updateUser);
 userRouter.put("/reset-password", updatePassword);
+userRouter.delete("/", deleteUser);
 
 export { userRouter };

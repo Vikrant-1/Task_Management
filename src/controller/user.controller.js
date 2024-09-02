@@ -1,4 +1,5 @@
 import {
+  deleteUserService,
   updatePasswordService,
   updateUserService,
   userLoginService,
@@ -93,4 +94,21 @@ const updatePassword = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUser, updateUser ,updatePassword};
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    await deleteUserService({ userId });
+    handleSuccess(res, 200, "User deleted successfully!!");
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "Failed to delete User");
+  }
+};
+
+export {
+  registerUser,
+  loginUser,
+  getUser,
+  updateUser,
+  updatePassword,
+  deleteUser,
+};
