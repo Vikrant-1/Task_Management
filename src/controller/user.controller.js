@@ -1,9 +1,11 @@
 import {
+  updateUserService,
   userLoginService,
   userRegisterService,
 } from "../services/userService.js";
 import { handleError, handleSuccess } from "../utils/responseHandler.js";
 import {
+  zodUpdateValidation,
   zodUserLoginValidation,
   zodUserRegisterValidation,
 } from "../zodSchema/zodUserValidation.js";
@@ -61,4 +63,18 @@ const getUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUser };
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { firstname, lastname } = req.params ?? {};
+    const zodCheck = zodUpdateValidation.safeParse({ firstname, lastname });
+    if (zodCheck.error)
+      return handleError(res, 401, "Please Enter valid firstname or lastname");
+    const user = await updateUserService({ firstname, lastname ,userId});
+    handleSuccess(res, 200, "User details updated succesfully!!", user);
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "Failed to update user details");
+  }
+};
+
+export { registerUser, loginUser, getUser, updateUser };

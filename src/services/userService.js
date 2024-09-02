@@ -36,4 +36,19 @@ const getUserService = async ({ userId }) => {
   return user;
 };
 
-export { userRegisterService, userLoginService, getUserService };
+const updateUserService = async ({ firstname, lastname, userId }) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { firstname, lastname },
+    { new: true }
+  );
+  if (!user) throw new Error("User did not found");
+  return user;
+};
+
+export {
+  userRegisterService,
+  userLoginService,
+  getUserService,
+  updateUserService,
+};
