@@ -46,9 +46,23 @@ const updateUserService = async ({ firstname, lastname, userId }) => {
   return user;
 };
 
+const updatePasswordService = async ({ userId, password, newPassword }) => {
+  if (password !== newPassword) throw new Error("Password not match");
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User did not exist");
+
+  const isPassword = await user.comparePassword(password);
+  if (!isPassword) throw new Error("Password is Wrong");
+
+  const updatedUser = await User.updateOne({ username }, { password });
+
+  return updatedUser;
+};
+
 export {
   userRegisterService,
   userLoginService,
   getUserService,
   updateUserService,
+  updatePasswordService,
 };

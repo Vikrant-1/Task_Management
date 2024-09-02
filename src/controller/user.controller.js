@@ -1,10 +1,12 @@
 import {
+  updatePasswordService,
   updateUserService,
   userLoginService,
   userRegisterService,
 } from "../services/userService.js";
 import { handleError, handleSuccess } from "../utils/responseHandler.js";
 import {
+  zodPasswordCheck,
   zodUpdateValidation,
   zodUserLoginValidation,
   zodUserRegisterValidation,
@@ -70,11 +72,25 @@ const updateUser = async (req, res) => {
     const zodCheck = zodUpdateValidation.safeParse({ firstname, lastname });
     if (zodCheck.error)
       return handleError(res, 401, "Please Enter valid firstname or lastname");
-    const user = await updateUserService({ firstname, lastname ,userId});
+    const user = await updateUserService({ firstname, lastname, userId });
     handleSuccess(res, 200, "User details updated succesfully!!", user);
   } catch (error) {
     handleError(res, 401, error?.message ?? "Failed to update user details");
   }
 };
 
-export { registerUser, loginUser, getUser, updateUser };
+const updatePassword = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { password, newPassword } = req.params ?? {};
+    const zodCheck = zodPasswordCheck.safeParse({ password, newPassword });
+    if (zodCheck.error) throw new Error("Invalid Password");
+
+    await updatePasswordService({ userId, password, newPassword });
+    handleSuccess(res, 200, "Password Updated successfully!!");
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "Failed to udpate password");
+  }
+};
+
+export { registerUser, loginUser, getUser, updateUser ,updatePassword};

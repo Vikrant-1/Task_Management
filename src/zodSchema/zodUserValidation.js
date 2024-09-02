@@ -24,3 +24,9 @@ export const zodUpdateValidation = zod.object({
   firstname: zod.string().min(3).max(50),
   lastname: zod.string().min(3).max(50),
 });
+
+
+export const zodPasswordCheck = zod.object({
+  password: zod.string().min(6).max(20),
+  newPassword:zod.string().min(6).max(20),
+}).required({password:true});
