@@ -1,21 +1,21 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
+import 'dotenv/config'
+import express from "express";
+import cors from "cors";
+import mainRouter from './routes/mainRoute.js';
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// midleware if any
 
-// routes
 
-app.get("/", (req, res) => {
-  res.send("Hello world");
-});
 
+// route
+app.use('/api/v1', mainRouter);
+
+// server
 const PORT = process.env.PORT;
-
 app.listen(PORT, () => {
   console.log(`Server is Running at : ${PORT}`);
 });

@@ -1,6 +1,7 @@
-import { userRegisterService } from "../services/userService";
-import { handleError, handleSuccess } from "../utils/responseHandler";
-import { zodUserRegisterValidation } from "../zodSchema/zodUserValidation";
+import { userRegisterService } from "../services/userService.js";
+import { handleError, handleSuccess } from "../utils/responseHandler.js";
+import { zodUserRegisterValidation } from "../zodSchema/zodUserValidation.js";
+
 
 const registerUser = async (req, res) => {
   try {
