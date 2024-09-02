@@ -19,7 +19,21 @@ const userRegisterService = async ({
   return newUser;
 };
 
+const userLoginService = async ({ username, password }) => {
+  // check user
+  const user = await User.findOne({ username });
+  if (!user) throw new Error(`${username} does not exist.`);
 
-export {
-    userRegisterService,
-}
+  // check password
+  const isPassword = await user.comparePassword(password);
+  if (!isPassword) throw new Error("Wrong Password");
+  return user;
+};
+
+const getUserService = async ({ userId }) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User did not Exist");
+  return user;
+};
+
+export { userRegisterService, userLoginService, getUserService };

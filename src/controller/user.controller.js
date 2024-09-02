@@ -1,7 +1,12 @@
-import { userRegisterService } from "../services/userService.js";
+import {
+  userLoginService,
+  userRegisterService,
+} from "../services/userService.js";
 import { handleError, handleSuccess } from "../utils/responseHandler.js";
-import { zodUserRegisterValidation } from "../zodSchema/zodUserValidation.js";
-
+import {
+  zodUserLoginValidation,
+  zodUserRegisterValidation,
+} from "../zodSchema/zodUserValidation.js";
 
 const registerUser = async (req, res) => {
   try {
@@ -28,4 +33,32 @@ const registerUser = async (req, res) => {
   }
 };
 
-export { registerUser };
+const loginUser = async (req, res) => {
+  try {
+    const { username, password } = req.params ?? {};
+    const zodCheck = zodUserLoginValidation.safeParse({
+      username,
+      password,
+    });
+    if (zodCheck.error)
+      return handleError(res, 401, "Please enter valid username or password.");
+
+    const user = await userLoginService({ username, password });
+
+    handleSuccess(res, 200, "Logged in Sucessfully!!", user);
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "Failed to Login");
+  }
+};
+
+const getUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await getUserService({ userId });
+    handleSuccess(res, 200, "Successfully fetched user!!", user);
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "User did not found");
+  }
+};
+
+export { registerUser, loginUser, getUser };
