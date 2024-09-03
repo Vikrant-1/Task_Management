@@ -15,3 +15,19 @@ const createProjectService = async ({
   if (!project) throw new Error("Error While creating project");
   return project;
 };
+
+const getProjectInfoService = async ({ projectId, userId }) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    throw new Error("Project not Exist");
+  }
+  const check =
+    project.createdBy._id === userId ||
+    project.members.find((val) => val.user._id === userId);
+
+  if (check) return project;
+
+  throw new Error("You dont Have Access of this project");
+};
+
+export { createProjectService, getProjectInfoService };

@@ -35,3 +35,16 @@ const createProject = async (req, res) => {
     handleError(res, 401, error?.message ?? "Error while creating project");
   }
 };
+const getProjectInfo = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { projectId } = req.query ?? {};
+
+    const project = await getProjectInfoService({ projectId, userId });
+
+    handleSuccess(res, 200, "Project fetched Successfully!!", project);
+  } catch (error) {
+    handleError(res, 401, "Error while fetching project");
+  }
+};
+
