@@ -22,7 +22,7 @@ const getProjectInfoService = async ({ projectId, userId }) => {
     throw new Error("Project not Exist");
   }
   const check =
-    project.createdBy._id === userId ||
+    project.createdBy.toString() === userId ||
     project.members.find((val) => val.user._id === userId);
 
   if (check) return project;
@@ -30,4 +30,14 @@ const getProjectInfoService = async ({ projectId, userId }) => {
   throw new Error("You dont Have Access of this project");
 };
 
-export { createProjectService, getProjectInfoService };
+const deleteProjectService = async ({ projectId, userId }) => {
+  const project = await Project.findById(projectId);
+  if (!project) throw new Error("Project did not exist");
+
+  if (project.createdBy.toString() !== userId) throw new Error("You don't have access to delete this project");
+  
+  const deleteProject = await Project.findByIdAndDelete(projectId);
+  return deleteProject;
+}
+
+export { createProjectService, getProjectInfoService ,deleteProjectService};

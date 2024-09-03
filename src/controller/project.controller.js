@@ -1,5 +1,6 @@
 import {
   createProjectService,
+  deleteProjectService,
   getProjectInfoService,
 } from "../services/projectService";
 import { handleError, handleSuccess } from "../utils/responseHandler";
@@ -35,6 +36,7 @@ const createProject = async (req, res) => {
     handleError(res, 401, error?.message ?? "Error while creating project");
   }
 };
+
 const getProjectInfo = async (req, res) => {
   try {
     const userId = req.userId;
@@ -48,3 +50,15 @@ const getProjectInfo = async (req, res) => {
   }
 };
 
+const deleteProject = async (req, res) => {
+  try {
+    const { projectId } = req.query;
+    const userId = req.userId;
+    await deleteProjectService({ userId, projectId });
+    handleSuccess(res, 200, "Project Deleted Successfully!!");
+  } catch (error) {
+    handleError(res, 401, error?.message ?? "Error while deleting project");
+  }
+};
+
+export { createProject, getProjectInfo, deleteProject };
