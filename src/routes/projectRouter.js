@@ -1,15 +1,15 @@
 import express from "express";
-import { createProject, deleteProject, getProjectInfo } from "../controller/project.controller";
+// import { createProject, deleteProject, getProjectInfo } from "../controller/project";
 
 const projectRouter = express.Router();
 
 // add user check auth midleware here and also add jwt token generation in login function
-projectRouter.post("/", createProject);
+// projectRouter.post("/", createProject);
 
 
-projectRouter.delete("/", deleteProject);
+// projectRouter.delete("/", deleteProject);
 
-projectRouter.get("/:projectId", getProjectInfo);
+// projectRouter.get("/:projectId", getProjectInfo);
 
 
 export {

@@ -1,5 +1,6 @@
 import {
   deleteUserService,
+  getUserService,
   updatePasswordService,
   updateUserService,
   userLoginService,
@@ -16,22 +17,29 @@ import {
 const registerUser = async (req, res) => {
   try {
     // get user details
-    const { firstname, lastname, username, password } = req.params ?? {};
+    const { firstname, lastname, username, password } = req.body ?? {};
     // parse it with zod
+    console.log(req.body);
+
     const zodCheck = zodUserRegisterValidation.safeParse({
       firstname,
       lastname,
       username,
       password,
     });
-    if (zodCheck.error) return handleError(res, 401, "User validation failed");
+    if (zodCheck.error)
+      return handleError(
+        res,
+        401,
+        zodCheck.error.message ?? "User validation failed"
+      );
 
-    const newUser = await userRegisterService(
+    const newUser = await userRegisterService({
       firstname,
       lastname,
       username,
-      password
-    );
+      password,
+    });
     handleSuccess(res, 201, "User resgistered Successfully", newUser);
   } catch (error) {
     handleError(res, 409, error?.message ?? "Failed to create new account.");

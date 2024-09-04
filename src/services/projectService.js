@@ -1,4 +1,4 @@
-import { Project } from "../schema/Project.schema";
+import { Project } from "../schema/Project.schema.js";
 
 const createProjectService = async ({
   name,
