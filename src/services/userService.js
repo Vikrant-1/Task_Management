@@ -1,4 +1,5 @@
 import { User } from "../schema/User.schema.js";
+import { generateJwtToken } from "../utils/jwtUtils.js";
 
 const userRegisterService = async ({
   firstname,
@@ -16,7 +17,14 @@ const userRegisterService = async ({
     password,
   });
   await newUser.save();
-  return newUser;
+
+  const token = generateJwtToken({ username, id: newUser._id.toString() });
+
+  if (!token) {
+    throw new Error("Failed to generate token");
+  }
+
+  return { ...newUser, token };
 };
 
 const userLoginService = async ({ username, password }) => {
@@ -27,7 +35,17 @@ const userLoginService = async ({ username, password }) => {
   // check password
   const isPassword = await user.comparePassword(password);
   if (!isPassword) throw new Error("Wrong Password");
-  return user;
+
+  const token = generateJwtToken({
+    username: user.username,
+    id: user._id.toString(),
+  });
+
+  if (!token) {
+    throw new Error("Failed to generate token");
+  }
+
+  return { ...user, id: user._id.toString() };
 };
 
 const getUserService = async ({ userId }) => {
