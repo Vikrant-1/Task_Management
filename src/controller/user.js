@@ -18,8 +18,6 @@ const registerUser = async (req, res) => {
   try {
     // get user details
     const { firstname, lastname, username, password } = req.body ?? {};
-    // parse it with zod
-    console.log(req.body);
 
     const zodCheck = zodUserRegisterValidation.safeParse({
       firstname,
@@ -48,7 +46,7 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { username, password } = req.params ?? {};
+    const { username, password } = req.body ?? {};
     const zodCheck = zodUserLoginValidation.safeParse({
       username,
       password,
