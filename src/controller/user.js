@@ -51,11 +51,12 @@ const loginUser = async (req, res) => {
       username,
       password,
     });
-    if (zodCheck.error)
-      return handleError(res, 401, "Please enter valid username or password.");
+    if (zodCheck.error) return handleError(res, 401, "Please enter valid username or password.");    
 
+    console.log('userloginservice');
     const user = await userLoginService({ username, password });
-
+    console.log(user,'user');
+    
     handleSuccess(res, 200, "Logged in Sucessfully!!", user);
   } catch (error) {
     handleError(res, 401, error?.message ?? "Failed to Login");
