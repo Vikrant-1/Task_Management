@@ -23,6 +23,7 @@ const UserSchema = new mongoose.Schema(
       minLength: 3,
       maxLength: 50,
       unique: true,
+      index: true,
     },
     password: {
       type: String,
@@ -31,6 +32,7 @@ const UserSchema = new mongoose.Schema(
       maxLength: 30,
       trim: true,
     },
+    teams: [{ type: mongoose.Schema.Types.ObjectId, ref: "Team", index: true }],
   },
   { timestamps: true }
 );
@@ -46,7 +48,7 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-UserSchema.methods.comparePassword = async function(password){
+UserSchema.methods.comparePassword = async function (password) {
   const isPassword = await bcrypt.compare(password, this.password);
   return isPassword ?? false;
 };

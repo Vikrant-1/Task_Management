@@ -8,11 +8,12 @@ const ProjectSchema = new mongoose.Schema(
       trim: true,
       minLength: 3,
       maxLength: 50,
+      index: true,
     },
     description: {
       type: String,
       trim: true,
-      maxLength: 500,
+      maxLength: 300,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -20,12 +21,12 @@ const ProjectSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    team: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Team",
-      required: true,
-      index: true,
-    },
+    teams: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Team",
+      },
+    ],
   },
   { timestamps: true }
 );
