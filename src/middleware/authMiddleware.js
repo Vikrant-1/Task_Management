@@ -1,6 +1,6 @@
-import { User } from "../schema/User.schema";
-import { verifyJwtToken } from "../utils/jwtUtils";
-import { handleError, handleSuccess } from "../utils/responseHandler";
+import { User } from "../schema/User.schema.js";
+import { verifyJwtToken } from "../utils/jwtUtils.js";
+import { handleError, handleSuccess } from "../utils/responseHandler.js";
 
 async function authMiddleware(req, res, next) {
   try {
@@ -22,6 +22,8 @@ async function authMiddleware(req, res, next) {
 
     if (user.username === username) {
       req.user = user;
+      req.username = username;
+      req.userId = id;
       next();
     }
     return handleError(res, 401, "Unauthorized");

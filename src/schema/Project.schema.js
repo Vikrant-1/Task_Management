@@ -8,7 +8,6 @@ const ProjectSchema = new mongoose.Schema(
       trim: true,
       minLength: 3,
       maxLength: 50,
-      index: true,
     },
     description: {
       type: String,
@@ -21,22 +20,11 @@ const ProjectSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    members: {
-      type: [
-        {
-          user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
-          },
-          role: {
-            type: String,
-            enum: ["admin", "editor", "viewer"],
-            default: "editor",
-          },
-        },
-      ],
-      default: [],
+    team: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Team",
+      required: true,
+      index: true,
     },
   },
   { timestamps: true }

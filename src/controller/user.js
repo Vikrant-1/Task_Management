@@ -38,7 +38,11 @@ const registerUser = async (req, res) => {
       username,
       password,
     });
-    handleSuccess(res, 201, "User resgistered Successfully", newUser);
+    return res.status(200).cookie("token", newUser.token).json({
+      success: true,
+      message: "User created successfully",
+      data: newUser,
+    });
   } catch (error) {
     handleError(res, 409, error?.message ?? "Failed to create new account.");
   }
@@ -51,13 +55,19 @@ const loginUser = async (req, res) => {
       username,
       password,
     });
-    if (zodCheck.error) return handleError(res, 401, "Please enter valid username or password.");    
+    if (zodCheck.error)
+      return handleError(res, 401, "Please enter valid username or password.");
 
-    console.log('userloginservice');
     const user = await userLoginService({ username, password });
-    console.log(user,'user');
-    
-    handleSuccess(res, 200, "Logged in Sucessfully!!", user);
+    const option = {
+      http: true,
+      secure: true,
+    };
+    return res.status(200).cookie("token", user.token, option).json({
+      success: true,
+      message: "Login Successful",
+      data: user,
+    });
   } catch (error) {
     handleError(res, 401, error?.message ?? "Failed to Login");
   }
