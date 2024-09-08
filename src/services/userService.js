@@ -25,7 +25,13 @@ const userRegisterService = async ({
     throw new Error("Failed to generate token");
   }
 
-  return { ...newUser, token };
+  return {
+    username,
+    firstname,
+    lastname,
+    id: newUser._id,
+    token,
+  };
 };
 
 const userLoginService = async ({ username, password }) => {
@@ -53,7 +59,7 @@ const userLoginService = async ({ username, password }) => {
       token: token,
       id: user._id,
     };
-  } catch (error) {    
+  } catch (error) {
     handleError(res, 401, error?.message ?? "Failed to Login");
   }
 };
