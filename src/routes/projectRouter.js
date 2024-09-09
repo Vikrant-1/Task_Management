@@ -1,29 +1,35 @@
-// POST /projects: Create a new project.
-// GET /projects: Retrieve a list of projects.
-// GET /projects/
-// : Retrieve a specific project by ID.
-// PUT /projects/
-// : Update a specific project.
-// DELETE /projects/
-// : Delete a specific project.
-
-
-
 import express from "express";
-import { createProject, deleteProject, getProjectInfo } from "../controller/project.js";
+import {
+  createProject,
+  deleteProject,
+  getProjectInfo,
+  updateProjectDetails,
+  updateProjectTeams,
+} from "../controller/project.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { projectMiddleware } from "../middleware/projectMiddleware.js";
 
 const projectRouter = express.Router();
 
-
 projectRouter.post("/", authMiddleware, createProject);
 projectRouter.get("/:projectId", authMiddleware, getProjectInfo);
-projectRouter.delete("/:projectId",authMiddleware,projectMiddleware,deleteProject);
+projectRouter.delete(
+  "/:projectId",
+  authMiddleware,
+  projectMiddleware,
+  deleteProject
+);
+projectRouter.put(
+  "/:projectId",
+  authMiddleware,
+  projectMiddleware,
+  updateProjectDetails
+);
+projectRouter.put(
+  "/:projectId/teams",
+  authMiddleware,
+  projectMiddleware,
+  updateProjectTeams
+);
 
-
-export {
-    projectRouter
-}
-
-
+export { projectRouter };

@@ -102,4 +102,63 @@ const deleteProject = async (req, res) => {
   }
 };
 
-export { createProject, getProjectInfo, deleteProject };
+const updateProjectDetails = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const { projectId } = req.params;
+
+    const updatedProject = await Project.updateOne(
+      { _id: projectId },
+      { name, description }
+    );
+
+    if (!updateProjectDetails)
+      return handleError(res, 401, "Failed to update Project");
+
+    handleSuccess(res, 200, "Project updatedSuccessfully", updatedProject);
+  } catch (error) {
+    handleError(res, 500, error?.message ?? "Failed to update project details");
+  }
+};
+
+const updateProjectTeams = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const { addedTeams, removedTeams } = req.body;
+    // add teams
+    const updatedProject = await Project.updateOne(
+      { _id: projectId },
+      {
+        $addToSet: { teams: addedTeams },
+        $pull: { teams: removedTeams },
+      }
+    );
+    // remove project from removed Teams
+    await Team.updateMany(
+      { _id: { $in: removedTeams } },
+      { $pull: { projects: projectId } }
+    );
+    // add project in new teams
+    await Team.updateMany(
+      { _id: { $in: addedTeams } },
+      { $addToSet: { projects: projectId } }
+    );
+
+    handleSuccess(
+      res,
+      200,
+      "Project Teams Updated Succesfully!!",
+      updatedProject
+    );
+  } catch (error) {
+    handleError(res, 500, "Failed to updated project teams");
+  }
+};
+
+export {
+  createProject,
+  getProjectInfo,
+  deleteProject,
+  updateProjectDetails,
+  updateProjectTeams,
+};
