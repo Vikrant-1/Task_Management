@@ -19,6 +19,12 @@ const projectRouter = express.Router();
 projectRouter.post("/", authMiddleware, createProject);
 
 
+
+projectRouter.get("/:projectId", authMiddleware, getProjectInfo);
+
+
+
+
 // projectRouter.delete("/", deleteProject);
 
 // projectRouter.get("/:projectId", getProjectInfo);
