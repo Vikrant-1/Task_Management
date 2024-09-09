@@ -1,21 +1,4 @@
 import { Project } from "../schema/Project.schema.js";
-
-const createProjectService = async ({
-  name,
-  description,
-  createdBy,
-  teams = [],
-}) => {
-  const project = await Project.create({
-    name,
-    description,
-    createdBy,
-    teams,
-  });
-  if (!project) throw new Error("Error While creating project");
-  return project;
-};
-
 const getProjectInfoService = async ({ projectId, userId }) => {
   const project = await Project.findById(projectId);
   if (!project) {
@@ -40,4 +23,4 @@ const deleteProjectService = async ({ projectId, userId }) => {
   return deleteProject;
 }
 
-export { createProjectService, getProjectInfoService ,deleteProjectService};
+export { getProjectInfoService ,deleteProjectService};

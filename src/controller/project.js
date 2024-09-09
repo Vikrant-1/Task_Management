@@ -1,16 +1,18 @@
+import mongoose from "mongoose";
 import { Team } from "../schema/Team.schema";
 import {
-  createProjectService,
   deleteProjectService,
   getProjectInfoService,
 } from "../services/projectService";
 import { handleError, handleSuccess } from "../utils/responseHandler";
 import { zodCreateProjectValidation } from "../zodSchema/zodProjectValidation";
+import { Project } from "../schema/Project.schema";
 
 const createProject = async (req, res) => {
   try {
     const userId = req.userId;
-    const { name = "", description = "", teams = [] } = req.params ?? {};
+    const { name = "", description = "", teams = [] } = req.body ?? {};
+    // Zod validation
     const zodCheck = zodCreateProjectValidation.safeParse({
       name,
       description,
@@ -21,24 +23,43 @@ const createProject = async (req, res) => {
     if (!zodCheck.success)
       return handleError(
         res,
-        401,
-        zodCheck.error?.message ?? "Please provide the valid inputs."
+        400,  // Changed to 400 Bad Request
+        zodCheck.error?.message ?? "Please provide valid inputs."
       );
+    // Check if the provided teams exist
     if (teams?.length >= 1) {
       const teamExist = await Team.find({ _id: { $in: teams } }, { _id: 1 });
-      if (teamExist.length !== teams.length) return handleError(res, 401, "Some Teams Does not exist");
+      if (teamExist.length !== teams.length)
+        return handleError(res, 404, "Some teams do not exist."); 
     }
-
-    const project = await createProjectService({
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    // Create new project
+    const newProject = new Project({
       name,
       description,
-      createdBy: userId,
       teams,
+      createdBy: userId,
     });
+    await newProject.save({ session });
 
-    handleSuccess(res, 200, "Project Created Succesfully!!", project);
+    // Update teams with project ids
+    await Team.updateMany(
+      { _id: { $in: teams } },
+      { $addToSet: { projects: newProject._id } },
+      { session }
+    );
+
+    // Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+    handleSuccess(res, 200, "Project created successfully!", newProject);
+
   } catch (error) {
-    handleError(res, 401, error?.message ?? "Error while creating project");
+    // Rollback transaction in case of an error
+    await session.abortTransaction();
+    session.endSession();
+    handleError(res, 500, error?.message ?? "Error while creating project");
   }
 };
 
