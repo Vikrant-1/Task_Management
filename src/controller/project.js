@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
 import { Team } from "../schema/Team.schema";
-import {
-  deleteProjectService,
-  getProjectInfoService,
-} from "../services/projectService";
+import { getProjectInfoService } from "../services/projectService";
 import { handleError, handleSuccess } from "../utils/responseHandler";
 import { zodCreateProjectValidation } from "../zodSchema/zodProjectValidation";
 import { Project } from "../schema/Project.schema";
@@ -23,14 +20,14 @@ const createProject = async (req, res) => {
     if (!zodCheck.success)
       return handleError(
         res,
-        400,  // Changed to 400 Bad Request
+        400, // Changed to 400 Bad Request
         zodCheck.error?.message ?? "Please provide valid inputs."
       );
     // Check if the provided teams exist
     if (teams?.length >= 1) {
       const teamExist = await Team.find({ _id: { $in: teams } }, { _id: 1 });
       if (teamExist.length !== teams.length)
-        return handleError(res, 404, "Some teams do not exist."); 
+        return handleError(res, 404, "Some teams do not exist.");
     }
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -54,7 +51,6 @@ const createProject = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
     handleSuccess(res, 200, "Project created successfully!", newProject);
-
   } catch (error) {
     // Rollback transaction in case of an error
     await session.abortTransaction();
@@ -77,12 +73,31 @@ const getProjectInfo = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    const { projectId } = req.query;
-    const userId = req.userId;
-    await deleteProjectService({ userId, projectId });
+    const { projectId } = req.params;
+    const project = req.project ?? {};
+    // delete project from all teams
+    if (project?.teams?.length > 0) {
+      await Team.updateMany(
+        {
+          projects: projectId,
+        },
+        {
+          $pull: { projects: projectId },
+        },
+        { session }
+      );
+    }
+    // delete project
+    await Project.findByIdAndDelete(projectId);
+    await session.commitTransaction();
+    session.endSession();
     handleSuccess(res, 200, "Project Deleted Successfully!!");
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     handleError(res, 401, error?.message ?? "Error while deleting project");
   }
 };
