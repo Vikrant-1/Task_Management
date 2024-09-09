@@ -4,13 +4,13 @@ const createProjectService = async ({
   name,
   description,
   createdBy,
-  members = [],
+  teams = [],
 }) => {
   const project = await Project.create({
     name,
     description,
     createdBy,
-    members,
+    teams,
   });
   if (!project) throw new Error("Error While creating project");
   return project;

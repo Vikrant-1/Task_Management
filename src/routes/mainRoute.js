@@ -5,6 +5,6 @@ import { projectRouter } from "./projectRouter.js";
 const mainRouter = express.Router();
 
 mainRouter.use("/user", userRouter);
-// mainRouter.use("/project", projectRouter);
+mainRouter.use("/project", projectRouter);
 
 export default mainRouter;

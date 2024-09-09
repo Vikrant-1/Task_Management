@@ -1,3 +1,4 @@
+import { Team } from "../schema/Team.schema";
 import {
   createProjectService,
   deleteProjectService,
@@ -9,12 +10,12 @@ import { zodCreateProjectValidation } from "../zodSchema/zodProjectValidation";
 const createProject = async (req, res) => {
   try {
     const userId = req.userId;
-    const { name = "", description = "", members = [] } = req.params ?? {};
+    const { name = "", description = "", teams = [] } = req.params ?? {};
     const zodCheck = zodCreateProjectValidation.safeParse({
       name,
       description,
       createdBy: userId,
-      members,
+      teams,
     });
 
     if (!zodCheck.success)
@@ -23,12 +24,16 @@ const createProject = async (req, res) => {
         401,
         zodCheck.error?.message ?? "Please provide the valid inputs."
       );
+    if (teams?.length >= 1) {
+      const teamExist = await Team.find({ _id: { $in: teams } }, { _id: 1 });
+      if (teamExist.length !== teams.length) return handleError(res, 401, "Some Teams Does not exist");
+    }
 
     const project = await createProjectService({
       name,
       description,
       createdBy: userId,
-      members,
+      teams,
     });
 
     handleSuccess(res, 200, "Project Created Succesfully!!", project);
