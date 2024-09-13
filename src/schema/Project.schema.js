@@ -15,6 +15,13 @@ const ProjectSchema = new mongoose.Schema(
       trim: true,
       maxLength: 300,
     },
+    fromDate: {
+      type: Date,
+      default:Date.now,
+    },
+    toDate: {
+      type:Date,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
