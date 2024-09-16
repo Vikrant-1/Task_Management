@@ -9,4 +9,6 @@ export const zodCreateProjectValidation = zod.object({
   description: projectDescription.optional(),
   createdBy: projectCreatedBy,
   teams: projectTeams.optional(),
+  toDate: zod.number().optional(),
+  fromDate: zod.number().optional(),
 });

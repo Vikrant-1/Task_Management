@@ -1,20 +1,29 @@
 import mongoose from "mongoose";
-import { Team } from "../schema/Team.schema";
-import { getProjectInfoService } from "../services/projectService";
-import { handleError, handleSuccess } from "../utils/responseHandler";
-import { zodCreateProjectValidation } from "../zodSchema/zodProjectValidation";
-import { Project } from "../schema/Project.schema";
+import { Team } from "../schema/Team.schema.js";
+import { getProjectInfoService } from "../services/projectService.js";
+import { handleError, handleSuccess } from "../utils/responseHandler.js";
+import { zodCreateProjectValidation } from "../zodSchema/zodProjectValidation.js";
+import { Project } from "../schema/Project.schema.js";
 
 const createProject = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
     const userId = req.userId;
-    const { name = "", description = "", teams = [] } = req.body ?? {};
-    // Zod validation
+    const {
+      name = "",
+      description = "",
+      teams = [],
+      toDate,
+      fromDate,
+    } = req.body ?? {};
+
     const zodCheck = zodCreateProjectValidation.safeParse({
       name,
       description,
       createdBy: userId,
       teams,
+      toDate,
+      fromDate,
     });
 
     if (!zodCheck.success)
@@ -23,20 +32,24 @@ const createProject = async (req, res) => {
         400, // Changed to 400 Bad Request
         zodCheck.error?.message ?? "Please provide valid inputs."
       );
+
     // Check if the provided teams exist
     if (teams?.length >= 1) {
       const teamExist = await Team.find({ _id: { $in: teams } }, { _id: 1 });
       if (teamExist.length !== teams.length)
         return handleError(res, 404, "Some teams do not exist.");
     }
-    const session = await mongoose.startSession();
+
     session.startTransaction();
+
     // Create new project
     const newProject = new Project({
       name,
       description,
       teams,
       createdBy: userId,
+      toDate: toDate,
+      fromDate: fromDate,
     });
     await newProject.save({ session });
 
@@ -49,13 +62,15 @@ const createProject = async (req, res) => {
 
     // Commit transaction
     await session.commitTransaction();
-    session.endSession();
     handleSuccess(res, 200, "Project created successfully!", newProject);
   } catch (error) {
     // Rollback transaction in case of an error
-    await session.abortTransaction();
-    session.endSession();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     handleError(res, 500, error?.message ?? "Error while creating project");
+  } finally {
+    session.endSession();
   }
 };
 

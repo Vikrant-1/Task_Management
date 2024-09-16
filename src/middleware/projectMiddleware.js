@@ -1,5 +1,5 @@
-import { Project } from "../schema/Project.schema";
-import { handleError } from "../utils/responseHandler";
+import { Project } from "../schema/Project.schema.js";
+import { handleError } from "../utils/responseHandler.js";
 
 export const projectMiddleware = async (req, res, next) => {
   try {
