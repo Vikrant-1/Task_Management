@@ -13,7 +13,7 @@ async function authMiddleware(req, res, next) {
     const bearer = bearerHeader.split(" ")[1];
 
     if (!bearer) {
-      return handleError(res, 401, "Unauthorized");
+      return handleError(res, 401, "Unauthorized token");
     }
 
     const decodeToken = verifyJwtToken(bearer);
@@ -25,8 +25,9 @@ async function authMiddleware(req, res, next) {
       req.username = username;
       req.userId = id;
       next();
+    } else {
+      return handleError(res, 401, "Unauthorized");
     }
-    return handleError(res, 401, "Unauthorized");
   } catch (error) {
     return handleError(res, 401, "Unauthorized");
   }

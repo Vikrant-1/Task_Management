@@ -7,6 +7,7 @@ import { Project } from "../schema/Project.schema.js";
 
 const createProject = async (req, res) => {
   const session = await mongoose.startSession();
+  if(!session) return handleError(res, 500, "Error while creating project");
   try {
     const userId = req.userId;
     const {
@@ -62,16 +63,16 @@ const createProject = async (req, res) => {
 
     // Commit transaction
     await session.commitTransaction();
+    session.endSession();
     handleSuccess(res, 200, "Project created successfully!", newProject);
   } catch (error) {
     // Rollback transaction in case of an error
     if (session.inTransaction()) {
       await session.abortTransaction();
     }
-    handleError(res, 500, error?.message ?? "Error while creating project");
-  } finally {
     session.endSession();
-  }
+    handleError(res, 500, error?.message ?? "Error while creating project");
+  } 
 };
 
 const getProjectInfo = async (req, res) => {
